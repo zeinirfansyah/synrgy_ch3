@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 
 
-class WordAdapter(private val hurufId: String, context: Context) :
+class WordAdapter(private val letterId: String, context: Context) :
     RecyclerView.Adapter<WordAdapter.WordViewHolder>() {
 
     private val filteredWords: List<String>
@@ -22,7 +22,7 @@ class WordAdapter(private val hurufId: String, context: Context) :
         val words = context.resources.getStringArray(R.array.words).toList()
 
         filteredWords = words
-            .filter { it.startsWith(hurufId, ignoreCase = true) }
+            .filter { it.startsWith(letterId, ignoreCase = true) }
             .shuffled()
             .take(5)
             .sorted()
@@ -33,11 +33,11 @@ class WordAdapter(private val hurufId: String, context: Context) :
     }
 
     override fun getItemCount(): Int = filteredWords.size
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val layout = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.item_view, parent, false)
+
         layout.accessibilityDelegate = Accessibility
 
         return WordViewHolder(layout)
@@ -49,9 +49,8 @@ class WordAdapter(private val hurufId: String, context: Context) :
         val context = holder.view.context
 
         holder.button.text = item
-
         holder.button.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("${DetailActivity.PREFIX_PENCARIAN}${item}")
+            val queryUrl: Uri = Uri.parse("${WordListFragment.PREFIX_PENCARIAN}${item}")
             val intent = Intent(Intent.ACTION_VIEW, queryUrl)
             context.startActivity(intent)
         }
@@ -64,7 +63,6 @@ class WordAdapter(private val hurufId: String, context: Context) :
             info: AccessibilityNodeInfo
         ) {
             super.onInitializeAccessibilityNodeInfo(host, info)
-
             val customString = host.context?.getString(R.string.look_up_word)
             val customClick =
                 AccessibilityNodeInfo.AccessibilityAction(

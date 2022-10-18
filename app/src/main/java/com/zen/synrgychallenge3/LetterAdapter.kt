@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import androidx.annotation.RequiresApi
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 
 class LetterAdapter :
     RecyclerView.Adapter<LetterAdapter.LetterViewHolder>() {
     private val list = ('A').rangeTo('Z').toList()
-
 
     class LetterViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val button = view.findViewById<Button>(R.id.button_item)
@@ -23,7 +23,6 @@ class LetterAdapter :
     override fun getItemCount(): Int {
         return list.size
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LetterViewHolder {
         val layout = LayoutInflater
@@ -39,20 +38,20 @@ class LetterAdapter :
         holder.button.text = item.toString()
 
         holder.button.setOnClickListener {
-            val context = holder.view.context
-            val intent = Intent(context, DetailActivity::class.java)
-
-            intent.putExtra(DetailActivity.HURUF, holder.button.text.toString())
-            context.startActivity(intent)
+            val letter = holder.button
+            val action = LetterListFragmentDirections.actionLetterListFragmentToWordListFragment(letter.text.toString())
+            holder.view.findNavController().navigate(action)
         }
     }
 
     companion object Accessibility : View.AccessibilityDelegate() {
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         override fun onInitializeAccessibilityNodeInfo(
             host: View,
             info: AccessibilityNodeInfo
         ) {
             super.onInitializeAccessibilityNodeInfo(host, info)
+
             val customString = host.context?.getString(R.string.look_up_words)
             val customClick =
                 AccessibilityNodeInfo.AccessibilityAction(
